@@ -2,8 +2,8 @@ import os
 import telebot
 from dotenv import load_dotenv
 import pandas as pd
-from matplotlib.pyplot import plt 
-from datetime import datetime ,date
+# from matplotlib.pyplot import plt 
+# from datetime import datetime ,date
 
 # from covid import Covid
 
@@ -35,22 +35,23 @@ df.fillna(0)
 za = df[df['location'] == 'South Africa'] # if question is for South Africa
 
 
-#graph
-def create_graph():
-    fig , ax = plt.subplots(figsize=(12,6))
-    ax.ticklabel_format(style='plain')
-    ax.plot(za.date,za.new_cases_smoothed,'b')
-    ax.set_title('New Cases in {country}')
-    ax.set_ylabel('Amount of Cases')
-    ax.set_xlabel('Date')
-    ax.legend(['New Cases'])
-    from datetime import datetime,timedelta #program kept forgetting import just doing incase
-    date = datetime.now()
-    date = str(date)
-    date = date.strip()
-    date = date.replace(':','-')
-    plt.savefig('covid_graph'+date+'.png') #saves file
-    return 'covid_graph'+date+'.png' #filename
+
+# #graph
+# def create_graph():
+#     fig , ax = plt.subplots(figsize=(12,6))
+#     ax.ticklabel_format(style='plain')
+#     ax.plot(za.date,za.new_cases_smoothed,'b')
+#     ax.set_title('New Cases in {country}')
+#     ax.set_ylabel('Amount of Cases')
+#     ax.set_xlabel('Date')
+#     ax.legend(['New Cases'])
+#     from datetime import datetime,timedelta #program kept forgetting import just doing incase
+#     date = datetime.now()
+#     date = str(date)
+#     date = date.strip()
+#     date = date.replace(':','-')
+#     plt.savefig('covid_graph'+date+'.png') #saves file
+#     return 'covid_graph'+date+'.png' #filename
 
 '''
 get the df for covid world
