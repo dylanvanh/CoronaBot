@@ -1,10 +1,22 @@
-from covid import Covid
+import os
+import telebot
+from dotenv import load_dotenv
+import pandas as pd
 
-from matplotlib.pyplot import plt 
-# covid = Covid()
 
-# za = covid.get_status_by_country_name("South Africa")
+load_dotenv()
 
-country = 'za'
+my_secret = os.environ['API_KEY']
+bot = telebot.TeleBot(my_secret)
 
-print(f'New Cases in {country}')
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+	bot.reply_to(message, "Type /help to see commands")
+
+@bot.message_handler(commands=['help'])
+def help(message):
+    bot.reply_to(message,'Type /showstats to show the previous days stats for South Africa')
+
+
+
+bot.polling()

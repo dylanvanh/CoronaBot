@@ -14,26 +14,62 @@ load_dotenv()
 my_secret = os.environ['API_KEY']
 bot = telebot.TeleBot(my_secret)
 
+DATA = 'https://covid.ourworldindata.org/data/owid-covid-data.csv' #download the csv file 
+
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-	bot.reply_to(message, "Type /help to see commands")
+	bot.reply_to(message, "Type /help for commands")
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.reply_to(message,'Type /showstats to show the previous days stats for South Africa')
+    bot.reply_to(message,'Type /showstats (country name) - to show latest stats\n'+
+                        'Type /graph (countryname) - for a full graph of a countries cases'
+                        )
+
+@bot.message_handler(commands = ['za'])
+def get_country(message):
+
+    country = message.text
+    df = pd.read_csv(DATA) #read the csv file
+    df['date'] = pd.to_datetime(df.date) #convert the data
+    df.fillna(0)
+
+    za = df[df['location'] == 'South Africa'] # '{country} , user inputted country stats are shown , get input from user
+    latest_info = za.iloc[-1] #last day in the dataset
+    previous_day = za.iloc[-2] #2nd last day in the dataset
+
+    '''
+    2 - Location
+    3 - Date`
+    4 - total cases
+    5 - new cases
+    6 - total deaths
+    7 - new deaths
+    34- total vaccinations
+    37 - new vaccinations
+    '''
+    # output = 'country = {}'.format(country)
+    output = 'Location = {}\nDate = {}\nNew Cases = {}\nNew Deaths = {}\nNew Vaccinations = {}\nTotal Cases = {}\nTotal Deaths = {}\nTotal Vaccinations = {}\
+        '.format(country,latest_info[3].strftime('%Y-%m-%d'),latest_info[5].astype(str),
+                latest_info[7].astype(str),latest_info[37].astype(str),latest_info[4].astype(str),``
+                latest_info[6].astype(str),latest_info[34].astype(str))
+    bot.send_message(message.chat.id,output)
 
 
-country = ''
+# @bot.message_handler()
+# def test(message):
+#     bot.send_message(message.chat.id,message.text + 'boet')
+# country = ''
 
-data = 'https://covid.ourworldindata.org/data/owid-covid-data.csv' #the covid data
-df = pd.read_csv(data) #read the csv file
-df['date'] = pd.to_datetime(df.date) #convert the data
-df.fillna(0)
+# data = 'https://covid.ourworldindata.org/data/owid-covid-data.csv' #the covid data
+# df = pd.read_csv(data) #read the csv file
+# df['date'] = pd.to_datetime(df.date) #convert the data
+# df.fillna(0)
 
 
 
-za = df[df['location'] == 'South Africa'] # if question is for South Africa
-
+# za = df[df['location'] == 'South Africa'] 
 
 
 # #graph
