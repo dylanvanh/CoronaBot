@@ -26,11 +26,6 @@ def help(message):
                         'Type /graph (countryname) - for a full graph of a countries cases'
                         )
 
-##sends back every message sent , only runs when another command isnt called
-# @bot.message_handler(func = lambda message :True)
-# def get_country(message):
-#     bot.reply_to(message,message.text)
-
 def country_acronym(country):
     #converts a few of the long named countries into acronyms
     if country.lower() == 'za':
@@ -48,6 +43,14 @@ def country_acronym(country):
     return country    
 
 
+def load_dataset(country):
+    df = pd.read_csv(DATA) #read the csv file
+    df['date'] = pd.to_datetime(df.date) #convert the data
+    df.fillna(0)
+    country_df = df[df['location'] == country]
+
+    return country_df
+
 #graph
 def create_graph(country):
 
@@ -57,7 +60,7 @@ def create_graph(country):
     country_df = df[df['location'] == country]
 
     if country_df.empty:
-        return 'Country : ' + str(country) +" doesnt exist"
+        return 'Country : ' + str(country) +" doesnt exist",False
 
     print(country_df)
     fig , ax = plt.subplots(figsize=(12,6))
@@ -66,7 +69,7 @@ def create_graph(country):
     ax.plot(country_df.date,country_df.new_cases_smoothed,'b')
 
     ax.set_title('New Cases in ' + str(country))
-    ax.set_ylabel('Amount of Cases')
+    ax.set_ylabel('Number of Cases')
     ax.set_xlabel('Date')
     ax.legend(['New Cases'])
 
@@ -77,23 +80,33 @@ def create_graph(country):
     date = date.replace(':','-')
     plt.savefig('covid_graph'+date+'.png') #saves file
 
-    return 'covid_graph'+date+'.png' #filename
-
-@bot.message_handler(content_types=['text'])
-def get_stats(message):
-    user_message = message.text
+    return 'covid_graph'+date+'.png',True #filename
 
 
-    print(user_message)
-    
+def format_input(user_message):
     split_message = user_message.lower().title().split()
     output = ''
 
     for i in range(len(split_message)):
-        print(split_message[i])
         if i != 0:
             output += split_message[i] + ' '
     country_name = output.strip()
+
+    return split_message,country_name
+
+@bot.message_handler(content_types=['text'])
+def get_stats(message):
+
+    split_message,country_name = format_input(message.text)
+    # user_message = message.text
+
+    # split_message = user_message.lower().title().split()
+    # output = ''
+
+    # for i in range(len(split_message)):
+    #     if i != 0:
+    #         output += split_message[i] + ' '
+    # country_name = output.strip()
 
     if split_message[0].lower() == 'graph':
 
@@ -101,12 +114,18 @@ def get_stats(message):
         
         country_name = country_acronym(country_name)
 
-        photo_name = create_graph(country_name)
-        print('photoname = ' + str(photo_name))
-        bot.reply_to(message,photo_name)
+        photo_name,passed_check = create_graph(country_name)
 
-        photo = open(photo_name, 'rb')
-        bot.send_photo(message.chat.id,photo)
+        if passed_check:
+            print('photoname = ' + str(photo_name))
+            bot.reply_to(message,photo_name)
+            photo = open(photo_name, 'rb')
+            bot.send_photo(message.chat.id,photo)
+        else:
+            bot.reply_to(message,'Invalid Country Name')
+
+
+
 
     if split_message[0].lower() == 'stats':
         bot.reply_to(message,'Stats processing')
