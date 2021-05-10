@@ -21,42 +21,13 @@ def send_welcome(message):
 #/help , replies
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.reply_to(message,'Type /showstats (country name) - to show latest stats\n'+
-                        'Type /graph (countryname) - for a full graph of a countries cases'
-                        )
-
-def country_acronym(country):
-    #converts a few of the long named countries into acronyms
-    if country.lower() == 'za':
-        return 'South Africa'
-    
-    if country.lower() == 'usa':
-        return 'United States'
-    
-    if country.lower() == 'uk':
-        return 'United Kingdom'
-
-    if country.lower() == 'drc':
-        return 'Democratic Republic of Congo'
-
-    return country    
-
-
-def load_dataset(country):
-    df = pd.read_csv(DATA) #read the csv file
-    df['date'] = pd.to_datetime(df.date) #convert the data
-    df.fillna(0)
-    country_df = df[df['location'] == country]
-
-    return country_df
+    bot.reply_to(message,'stats (country name) - (e.g. stats China)\n'+
+                        'graph (country name) - (e.g graph China)')
 
 #graph
 def create_graph(country):
 
-    df = pd.read_csv(DATA) #read the csv file
-    df['date'] = pd.to_datetime(df.date) #convert the data
-    df.fillna(0)
-    country_df = df[df['location'] == country]
+    country_df = load_dataset(country)
 
     if country_df.empty:
         return 'Country : ' + str(country) +" doesnt exist",False
@@ -92,6 +63,38 @@ def format_input(user_message):
 
     return split_message,country_name
 
+def country_acronym(country):
+    #converts a few of the long named countries into acronyms
+    if country.lower() == 'za':
+        return 'South Africa'
+    
+    if country.lower() == 'usa':
+        return 'United States'
+    
+    if country.lower() == 'uk':
+        return 'United Kingdom'
+
+    if country.lower() == 'drc':
+        return 'Democratic Republic of Congo'
+
+    if country.lower() == 'na':
+        return 'North America'
+    
+    if country.lower() == 'sa':
+        return 'South America'
+
+    return country    
+
+
+def load_dataset(country):
+    df = pd.read_csv(DATA) #read the csv file
+    df['date'] = pd.to_datetime(df.date) #convert the data
+    df.fillna(0)
+    country = country_acronym(country)
+    country_df = df[df['location'] == country]
+
+    return country_df
+
 @bot.message_handler(content_types=['text'])
 def get_stats(message):
 
@@ -119,13 +122,11 @@ def get_stats(message):
     if split_message[0].lower() == 'stats':
         bot.reply_to(message,'Stats processing')
         try:
-            df = pd.read_csv(DATA) #read the csv file
-            df['date'] = pd.to_datetime(df.date) #convert the data
-            df.fillna(0)
-            country_name = country_acronym(country_name)
-            country_df = df[df['location'] == country_name] # '{country} , user inputted country stats are shown , get input from user
+
+            country_df = load_dataset(country_name)
+
             latest_info = country_df.iloc[-1] #last day in the dataset
-            previous_day = country_df.iloc[-2] #2nd last day in the dataset
+
 
             #location,latest_Date,new_cases,new_deaths,new_vaccinations,total_cases,total_deaths,total_vacciantions
             output = 'Location = {}\nLatest Date = {}\nNew Cases = {}\nNew Deaths = {}\nNew Vaccinations = {}\nTotal Cases = {}\nTotal Deaths = {}\nTotal Vaccinations = {}\
@@ -133,17 +134,10 @@ def get_stats(message):
                 latest_info[8].astype(str),latest_info[37].astype(str),latest_info[4].astype(str),
                 latest_info[7].astype(str),latest_info[34].astype(str))
             
-            output2 = 'Location = {}\nLatest Date = {}\nNew Cases = {}\nNew Deaths = {}\nNew Vaccinations = {}\nTotal Cases = {}\nTotal Deaths = {}\nTotal Vaccinations = {}\
-                '.format(country_name,previous_day[3].strftime('%Y-%m-%d'),previous_day[5].astype(str),
-                previous_day[8].astype(str),previous_day[37].astype(str),previous_day[4].astype(str),
-                previous_day[7].astype(str),previous_day[34].astype(str))
-                
             bot.send_message(message.chat.id,output)
-            bot.send_message(message.chat.id,output2)
 
         except:
-            err_message = 'error occured with inputted country name : ' + str(country_name)
-            bot.reply_to(message,err_message)
+            bot.reply_to(message,'Invalid Country Name')
 
         
 
