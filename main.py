@@ -6,7 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 # from datetime import datetime ,date
 
-# from covid import Covid
 
 load_dotenv()
 
@@ -56,6 +55,11 @@ def create_graph(country):
     df['date'] = pd.to_datetime(df.date) #convert the data
     df.fillna(0)
     country_df = df[df['location'] == country]
+
+    if country_df.empty:
+        return 'Country : ' + str(country) +" doesnt exist"
+
+    print(country_df)
     fig , ax = plt.subplots(figsize=(12,6))
     ax.ticklabel_format(style='plain')
 
@@ -72,6 +76,7 @@ def create_graph(country):
     date = date.strip()
     date = date.replace(':','-')
     plt.savefig('covid_graph'+date+'.png') #saves file
+
     return 'covid_graph'+date+'.png' #filename
 
 @bot.message_handler(content_types=['text'])
@@ -83,6 +88,7 @@ def get_stats(message):
     
     split_message = user_message.lower().title().split()
     output = ''
+
     for i in range(len(split_message)):
         print(split_message[i])
         if i != 0:
@@ -95,9 +101,11 @@ def get_stats(message):
         
         country_name = country_acronym(country_name)
 
-        create_graph(country_name)
-        
-    
+        photo_name = create_graph(country_name)
+        bot.reply_to(message,photo_name)
+
+        photo = open(photo_name, 'rb')
+        bot.send_photo(message.chat.id,photo)
 
     if split_message[0].lower() == 'stats':
         bot.reply_to(message,'Stats processing')
@@ -106,9 +114,9 @@ def get_stats(message):
             df['date'] = pd.to_datetime(df.date) #convert the data
             df.fillna(0)
             country_name = country_acronym(country_name)
-            test = df[df['location'] == country_name] # '{country} , user inputted country stats are shown , get input from user
-            latest_info = test.iloc[-1] #last day in the dataset
-            previous_day = test.iloc[-2] #2nd last day in the dataset
+            country_df = df[df['location'] == country_name] # '{country} , user inputted country stats are shown , get input from user
+            latest_info = country_df.iloc[-1] #last day in the dataset
+            previous_day = country_df.iloc[-2] #2nd last day in the dataset
 
             #location,latest_Date,new_cases,new_deaths,new_vaccinations,total_cases,total_deaths,total_vacciantions
             output = 'Location = {}\nLatest Date = {}\nNew Cases = {}\nNew Deaths = {}\nNew Vaccinations = {}\nTotal Cases = {}\nTotal Deaths = {}\nTotal Vaccinations = {}\
@@ -125,15 +133,9 @@ def get_stats(message):
             bot.send_message(message.chat.id,output2)
 
         except:
-            err_message = 'error occured with inputted country name :',country_name
+            err_message = 'error occured with inputted country name : ' + str(country_name)
             bot.reply_to(message,err_message)
 
-    
-    # else:
-    #     bot.reply_to(message,'Invalid Command')
-    #     country_name = country_acronym(country_name)
-
-    #     create_graph(country_name)
         
 
 #replies if a message is a sticker
