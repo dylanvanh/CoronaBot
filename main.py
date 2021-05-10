@@ -102,6 +102,7 @@ def get_stats(message):
         country_name = country_acronym(country_name)
 
         photo_name = create_graph(country_name)
+        print('photoname = ' + str(photo_name))
         bot.reply_to(message,photo_name)
 
         photo = open(photo_name, 'rb')
@@ -145,7 +146,7 @@ def test(message):
 
 
 
-bot.polling()
+bot.infinity_polling()
 
 '''
 get the df for covid world
