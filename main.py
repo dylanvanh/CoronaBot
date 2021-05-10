@@ -1,5 +1,4 @@
 import os
-from numpy import split
 import telebot
 from dotenv import load_dotenv
 import pandas as pd
@@ -62,7 +61,6 @@ def create_graph(country):
     if country_df.empty:
         return 'Country : ' + str(country) +" doesnt exist",False
 
-    print(country_df)
     fig , ax = plt.subplots(figsize=(12,6))
     ax.ticklabel_format(style='plain')
 
@@ -98,15 +96,6 @@ def format_input(user_message):
 def get_stats(message):
 
     split_message,country_name = format_input(message.text)
-    # user_message = message.text
-
-    # split_message = user_message.lower().title().split()
-    # output = ''
-
-    # for i in range(len(split_message)):
-    #     if i != 0:
-    #         output += split_message[i] + ' '
-    # country_name = output.strip()
 
     if split_message[0].lower() == 'graph':
 
@@ -121,9 +110,9 @@ def get_stats(message):
             bot.reply_to(message,photo_name)
             photo = open(photo_name, 'rb')
             bot.send_photo(message.chat.id,photo)
+            os.remove(photo_name)
         else:
             bot.reply_to(message,'Invalid Country Name')
-
 
 
 
