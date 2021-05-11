@@ -1,4 +1,4 @@
-# CoronaBot
+# CoronaStatsBot
 Telegram bot -> @DailyCoronaStatsbot
 
 
