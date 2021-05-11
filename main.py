@@ -99,7 +99,7 @@ def get_stats(message):
 
     split_message,country_name = format_input(message.text)
 
-    if split_message[0].lower() == 'graph':
+    if split_message[0].lower() == 'graph' or split_message[0] == 'Graph':
 
         bot.reply_to(message,'graph processing')
         
