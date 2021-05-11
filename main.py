@@ -17,7 +17,7 @@ DATA = 'https://covid.ourworldindata.org/data/owid-covid-data.csv' #download the
 #/start replies
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-	bot.reply_to(message, "Type /help for commands")
+	bot.reply_to(message, "Type /help for commands.\nType stats (location name) for all stats for the specific location.\nType graph (location name) for a graph on new covid cases in the specific location.")
 
 #/help , replies
 @bot.message_handler(commands=['help'])
@@ -63,7 +63,8 @@ def format_input(user_message):
     return split_message,country_name
 
 def country_acronym(country):
-    #converts a few of the long named countries into acronyms
+
+    #converts a few of the long named locations into acronyms
     if country.lower() == 'za':
         return 'South Africa'
     
@@ -91,7 +92,6 @@ def load_dataset(country):
     df.fillna(0)
     country = country_acronym(country)
     country_df = df[df['location'] == country]
-    
 
     return country_df
 
@@ -123,7 +123,6 @@ def get_stats(message):
         bot.reply_to(message,'Stats processing')
         try:
 
-
             country_df = load_dataset(country_name)
 
             latest_info = country_df.iloc[-1] #last day in the dataset
@@ -143,30 +142,15 @@ def get_stats(message):
                 
                 return output
             
-            output = display_output(country_name,latest_info,)
+            output = display_output(country_name,latest_info)
 
             bot.send_message(message.chat.id,output)
 
         except:
             bot.reply_to(message,'Invalid Country Name')
 
-        
-
-#replies if a message is a sticker
-@bot.message_handler(content_types=['sticker'])
-def test(message):
-    bot.send_message(message,'sticker boss')
-
-
 
 bot.infinity_polling()
-
-'''
-get the df for covid world
-use pandas to thingy it for za
-show last entry on thing, new cases and total cases
-maybe allow input for searching the whole world by country name?
-'''
 
 
 
