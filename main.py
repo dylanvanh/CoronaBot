@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime 
-# from datetime import datetime ,date
 
 
 load_dotenv()
