@@ -3,6 +3,7 @@ import telebot
 from dotenv import load_dotenv
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime 
 # from datetime import datetime ,date
 
 
@@ -26,7 +27,6 @@ def help(message):
 
 #graph
 def create_graph(country):
-
     country_df = load_dataset(country)
 
     if country_df.empty:
@@ -42,7 +42,6 @@ def create_graph(country):
     ax.set_xlabel('Date')
     ax.legend(['New Cases'])
 
-    from datetime import datetime #program kept forgetting import just doing incase
     date = datetime.now()
     date = str(date)
     date = date.strip()
@@ -92,6 +91,7 @@ def load_dataset(country):
     df.fillna(0)
     country = country_acronym(country)
     country_df = df[df['location'] == country]
+    
 
     return country_df
 
@@ -123,17 +123,28 @@ def get_stats(message):
         bot.reply_to(message,'Stats processing')
         try:
 
+
             country_df = load_dataset(country_name)
 
             latest_info = country_df.iloc[-1] #last day in the dataset
 
+            def display_output(country_name,latest_info):
+        
+                location = country_acronym(country_name)
+                latest_date = latest_info[3].strftime('%Y-%m-%d')
+                new_cases = latest_info[5].astype(str)
+                new_deaths = latest_info[8].astype(str)
+                new_vaccinations = latest_info[37].astype(str)
+                total_cases = latest_info[4].astype(str)
+                total_deaths = latest_info[7].astype(str)
+                total_vacciantions = latest_info[34].astype(str)
 
-            #location,latest_Date,new_cases,new_deaths,new_vaccinations,total_cases,total_deaths,total_vacciantions
-            output = 'Location = {}\nLatest Date = {}\nNew Cases = {}\nNew Deaths = {}\nNew Vaccinations = {}\nTotal Cases = {}\nTotal Deaths = {}\nTotal Vaccinations = {}\
-                '.format(country_name,latest_info[3].strftime('%Y-%m-%d'),latest_info[5].astype(str),
-                latest_info[8].astype(str),latest_info[37].astype(str),latest_info[4].astype(str),
-                latest_info[7].astype(str),latest_info[34].astype(str))
+                output = output = 'Location = {}\nLatest Date = {}\nNew Cases = {}\nNew Deaths = {}\nNew Vaccinations = {}\nTotal Cases = {}\nTotal Deaths = {}\nTotal Vaccinations = {}'.format(location,latest_date,new_cases,new_deaths,new_vaccinations,total_cases,total_deaths,total_vacciantions)
+                
+                return output
             
+            output = display_output(country_name,latest_info,)
+
             bot.send_message(message.chat.id,output)
 
         except:
