@@ -8,7 +8,7 @@ OWID daily updated worldwide csv https://covid.ourworldindata.org/data/owid-covi
 
 
 # Features:
-Shows latest known covid stats for a specified location
+Shows latest known covid stats for a specified location<br>
 Creates a graph on all new cases for a specified location
 
 # Example input:
