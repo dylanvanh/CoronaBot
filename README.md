@@ -3,7 +3,7 @@ Telegram bot -> @DailyCoronaStatsbot
 
 
 # What is uses
-pyTelegramBotAPI
+pyTelegramBotAPI<br>
 OWID daily updated worldwide csv https://covid.ourworldindata.org/data/owid-covid-data.csv
 
 
