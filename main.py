@@ -66,7 +66,10 @@ def country_acronym(country):
     #converts a few of the long named locations into acronyms
     if country.lower() == 'za':
         return 'South Africa'
-    
+
+    if country.lower() == 'nz':
+	return 'New Zealand'
+
     if country.lower() == 'usa':
         return 'United States'
     
