@@ -155,4 +155,7 @@ def get_stats(message):
 bot.infinity_polling()
 
 
+if __name__ == "__main__":
+    bot.infinity_polling()
+ 
 
