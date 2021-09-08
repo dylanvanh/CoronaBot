@@ -152,9 +152,6 @@ def get_stats(message):
             bot.reply_to(message,'Invalid Country Name')
 
 
-bot.infinity_polling()
-
-
 if __name__ == "__main__":
     bot.infinity_polling()
  
