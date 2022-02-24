@@ -1,3 +1,4 @@
-pyTelegramBotAPI
+PyTelegramBotAPI==2.2.3
 pandas
 matplotlib
+python-dotenv
